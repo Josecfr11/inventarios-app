@@ -35,6 +35,34 @@ export class AppComponent {
           this.router.navigate(['/button']);
         }
       },
+      {
+        label: 'Ventas',
+        icon: 'pi pi-dollar',
+        command: () => {
+          this.router.navigate(['/ventas']);
+        }
+      },
+      {
+        label: 'Compras',
+        icon: 'pi pi-receipt',
+        command: () => {
+          this.router.navigate(['/compras']);
+        }
+      },
+      {
+        label: 'Inventario',
+        icon: 'pi pi-warehouse',
+        command: () => {
+          this.router.navigate(['/inventario']);
+        }
+      },
+      {
+        label: 'Gestión de usuarios',
+        icon: 'pi pi-user',
+        command: () => {
+          this.router.navigate(['/usuarios']);
+        }
+      },
       // {
       //   label: 'External',
       //   icon: 'pi pi-home',
