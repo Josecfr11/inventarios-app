@@ -1,0 +1,89 @@
+<div class="main-content">
+  <div class="container-fluid">
+    
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card shadow-sm border-start border-primary border-5">
+          <div class="card-body">
+            <h6 class="text-muted small">TOTAL HERRAMIENTAS</h6>
+            <h3 class="fw-bold">{{ totalEquipos }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-start border-warning border-5">
+          <div class="card-body">
+            <h6 class="text-muted small">EN USO (PRESTADAS)</h6>
+            <h3 class="fw-bold text-warning">{{ enUso }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-start border-success border-5">
+          <div class="card-body">
+            <h6 class="text-muted small">VALOR TOTAL ACTIVO</h6>
+            <h3 class="fw-bold text-success">${{ valorTotal }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold text-secondary">Añadir Nuevo Equipo</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <input type="text" class="form-control bg-light" [(ngModel)]="nuevoCodigo" placeholder="Código">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control bg-light" [(ngModel)]="nuevoNombre" placeholder="Nombre">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100 fw-bold" (click)="agregarHerramienta()">Añadir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">CÓDIGO</th>
+              <th>HERRAMIENTA</th>
+              <th>ESTADO</th>
+              <th class="text-center">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of listaHerramientas; let i = index">
+              <td class="ps-4 fw-bold text-primary">{{ h.codigo }}</td>
+              <td>{{ h.nombre }}</td>
+              <td>
+                <span class="badge rounded-pill px-3" 
+                      [ngClass]="{'bg-success': h.estado === 'DISPONIBLE', 'bg-warning text-dark': h.estado === 'EN_USO', 'bg-danger': h.estado === 'MANTENIMIENTO'}">
+                  {{ h.estado }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-warning me-1" (click)="cambiarEstado(i, 'EN_USO')" title="Prestar">
+                  <i class="bi bi-person-check"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success me-1" (click)="cambiarEstado(i, 'DISPONIBLE')" title="Devolver">
+                  <i class="bi bi-arrow-left-circle"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminar(i)" title="Eliminar">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
