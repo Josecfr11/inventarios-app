@@ -10,7 +10,7 @@ body {
   margin: 0;
   padding: 0;
   /* El fondo gris suave combina genial con el blanco de PrimeNG */
-  background-color: #f8f9fa; 
+  background-color: #f8f9fa;
   font-family: var(--p-family, 'Segoe UI', sans-serif);
 }
 
@@ -34,4 +34,8 @@ body {
 /* Ajuste para que los botones de PrimeNG no se vean gigantes */
 .p-button {
   font-weight: 600;
+}
+
+.p-card {
+  padding: 1.5em;
 }
