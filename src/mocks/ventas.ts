@@ -1,10 +1,20 @@
-interface VentasList {
+export interface VentasList {
   id: number,
   numero_factura: string,
   fecha: string,
   total: number,
   estado: string,
   tipo_pago: string
+}
+
+export interface TiposPago {
+  id: number,
+  tipoPago: string
+}
+
+export interface EstatusVenta {
+  id: number,
+  estatus: string
 }
 
 export const ventasList: VentasList[] = [
@@ -29,3 +39,34 @@ export const ventasList: VentasList[] = [
   { id: 19, numero_factura: 'FAC-019', fecha: '2024-03-10', total: 520.00, estado: 'Pagado', tipo_pago: 'Transferencia' },
   { id: 20, numero_factura: 'FAC-020', fecha: '2024-03-10', total: 135.25, estado: 'Pendiente', tipo_pago: 'Tarjeta' },
 ];
+
+
+export const tiposPagoList: TiposPago[] = [
+  {
+    id: 1,
+    tipoPago: 'Efectivo'
+  },
+  {
+    id: 2,
+    tipoPago: 'Tarjeta'
+  },
+  {
+    id: 3,
+    tipoPago: 'Transferencia'
+  },
+]
+
+export const estatusList: EstatusVenta[] = [
+  {
+    id: 1,
+    estatus: 'Pendiente'
+  },
+  {
+    id: 2,
+    estatus: 'Pagado'
+  },
+  {
+    id: 3,
+    estatus: 'Cancelado'
+  },
+]

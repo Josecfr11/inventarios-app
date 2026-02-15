@@ -2,28 +2,31 @@
   <div class="row">
     <form [formGroup]="ventasForm" (ngSubmit)="agregarEditarVenta()">
       <div class="row">
-        <div class="col-12">
-          <label for="name" class="block font-bold mb-3">Venta</label>
+        <div class="col-12 mb-3">
+          <label for="name" class="block font-bold mb-2">Venta</label>
           <input type="text" pInputText id="venta" required autofocus fluid formControlName="numVenta" />
         </div>
-        <div class="col-12">
-          <label for="name" class="block font-bold mb-3">Fecha</label>
+        <div class="col-12 mb-3">
+          <label for="name" class="block font-bold mb-2">Fecha</label>
           <div>
             <p-datepicker dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true" formControlName="fecha"
               value="" />
           </div>
         </div>
-        <div class="col-12">
-          <label for="name" class="block font-bold mb-3">Total</label>
+        <div class="col-12 mb-3">
+          <label for="name" class="block font-bold mb-2">Total</label>
           <input type="text" pInputText id="name" required autofocus fluid formControlName="total" />
         </div>
-        <div class="col-12">
-          <label for="name" class="block font-bold mb-3">Estado</label>
-          <input type="text" pInputText id="estado" required autofocus fluid formControlName="estado" />
+        <div class="col-12 mb-3">
+          <label for="name" class="block font-bold mb-2">Estado</label>
+          <p-select formControlName="estado" [options]="estados" optionLabel="estatus"
+            placeholder="Selecciona un estado" [showClear]="true" [checkmark]="true" class="w-full md:w-56" optionValue="id"/>
         </div>
-        <div class="col-12">
-          <label for="name" class="block font-bold mb-3">Tipo de pago</label>
-          <input type="text" pInputText id="tipoPago" required autofocus fluid formControlName="tipoPago" />
+        <div class="col-12 mb-3">
+          <label for="name" class="block font-bold mb-2">Tipo de pago</label>
+          <p-select appendTo="body" formControlName="tipoPago" [options]="tiposPagos" optionLabel="tipoPago"
+            placeholder="Selecciona un tipo de pago" [showClear]="true" [checkmark]="true" optionValue="id"
+            class="w-full md:w-56" />
         </div>
       </div>
       <div class="row mt-4">

@@ -1,23 +1,26 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePicker } from 'primeng/datepicker';
-import { DialogModule } from 'primeng/dialog';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
-
+import { estatusList, tiposPagoList, EstatusVenta, TiposPago} from '../../../../mocks/ventas';
 @Component({
   selector: 'app-ventas-modal',
   standalone: true,
-  imports: [ButtonModule, TableModule, InputTextModule, DatePicker, ReactiveFormsModule],
+  imports: [ButtonModule, TableModule, InputTextModule, DatePicker, ReactiveFormsModule, Select],
   providers: [DatePipe],
   templateUrl: './ventas-modal.component.html',
   styleUrl: './ventas-modal.component.css'
 })
 export class VentasModalComponent {
   private readonly fb = inject(NonNullableFormBuilder);
+
+  public estados: EstatusVenta[] = estatusList;
+  public tiposPagos: TiposPago[] = tiposPagoList;
 
   ventasForm = this.fb.group({
     numVenta: ['', Validators.required],

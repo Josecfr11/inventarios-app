@@ -1,0 +1,7 @@
+::ng-deep p-select {
+  display: flex !important;
+}
+
+::ng-deep p-datepicker > span {
+  width: 100%;
+}
