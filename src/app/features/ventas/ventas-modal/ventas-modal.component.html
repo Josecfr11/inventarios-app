@@ -1,0 +1,30 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <label for="name" class="block font-bold mb-3">Venta</label>
+      <input type="text" pInputText id="name" required autofocus fluid />
+    </div>
+    <div class="col-12">
+      <label for="name" class="block font-bold mb-3">Fecha</label>
+      <div>
+        <p-datepicker dateFormat="dd.mm.yy" [iconDisplay]="'input'" [showIcon]="true"/>
+      </div>
+    </div>
+    <div class="col-12">
+      <label for="name" class="block font-bold mb-3">Total</label>
+      <input type="text" pInputText id="name" required autofocus fluid />
+    </div>
+    <div class="col-12">
+      <label for="name" class="block font-bold mb-3">Estado</label>
+      <input type="text" pInputText id="name" required autofocus fluid />
+    </div>
+    <div class="col-12">
+      <label for="name" class="block font-bold mb-3">Tipo de pago</label>
+      <input type="text" pInputText id="name" required autofocus fluid />
+    </div>
+  </div>
+</div>
+<div class="flex w-full justify-end mt-4">
+  <p-button type="button" label="Cancel" icon="pi pi-times"
+    (click)="closeDialog({ buttonType: 'Cancel', summary: 'No Product Selected' })" />
+</div>
