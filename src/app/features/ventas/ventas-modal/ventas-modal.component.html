@@ -1,30 +1,36 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-12">
-      <label for="name" class="block font-bold mb-3">Venta</label>
-      <input type="text" pInputText id="name" required autofocus fluid />
-    </div>
-    <div class="col-12">
-      <label for="name" class="block font-bold mb-3">Fecha</label>
-      <div>
-        <p-datepicker dateFormat="dd.mm.yy" [iconDisplay]="'input'" [showIcon]="true"/>
+    <form [formGroup]="ventasForm" (ngSubmit)="agregarEditarVenta()">
+      <div class="row">
+        <div class="col-12">
+          <label for="name" class="block font-bold mb-3">Venta</label>
+          <input type="text" pInputText id="venta" required autofocus fluid formControlName="numVenta" />
+        </div>
+        <div class="col-12">
+          <label for="name" class="block font-bold mb-3">Fecha</label>
+          <div>
+            <p-datepicker dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true" formControlName="fecha"
+              value="" />
+          </div>
+        </div>
+        <div class="col-12">
+          <label for="name" class="block font-bold mb-3">Total</label>
+          <input type="text" pInputText id="name" required autofocus fluid formControlName="total" />
+        </div>
+        <div class="col-12">
+          <label for="name" class="block font-bold mb-3">Estado</label>
+          <input type="text" pInputText id="estado" required autofocus fluid formControlName="estado" />
+        </div>
+        <div class="col-12">
+          <label for="name" class="block font-bold mb-3">Tipo de pago</label>
+          <input type="text" pInputText id="tipoPago" required autofocus fluid formControlName="tipoPago" />
+        </div>
       </div>
-    </div>
-    <div class="col-12">
-      <label for="name" class="block font-bold mb-3">Total</label>
-      <input type="text" pInputText id="name" required autofocus fluid />
-    </div>
-    <div class="col-12">
-      <label for="name" class="block font-bold mb-3">Estado</label>
-      <input type="text" pInputText id="name" required autofocus fluid />
-    </div>
-    <div class="col-12">
-      <label for="name" class="block font-bold mb-3">Tipo de pago</label>
-      <input type="text" pInputText id="name" required autofocus fluid />
-    </div>
+      <div class="row mt-4">
+        <div class="col justify-content-end" style="display: flex;">
+          <p-button type="submit" label="Guardar" icon="pi pi-save" />
+        </div>
+      </div>
+    </form>
   </div>
-</div>
-<div class="flex w-full justify-end mt-4">
-  <p-button type="button" label="Cancel" icon="pi pi-times"
-    (click)="closeDialog({ buttonType: 'Cancel', summary: 'No Product Selected' })" />
 </div>
