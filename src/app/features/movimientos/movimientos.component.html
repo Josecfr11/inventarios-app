@@ -1,1 +1,28 @@
-<p>movimientos works!</p>
+<div class="card shadow-sm m-4">
+    <h3 class="p-3"><i class="pi pi-arrow-right-arrow-left mr-2"></i>Kardex de Movimientos</h3>
+    
+    <p-table [value]="movimientos" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>ID Mov</th>
+                <th>Tipo</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Fecha y Hora</th>
+                <th>Usuario</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-m>
+            <tr>
+                <td>{{ m.id }}</td>
+                <td>
+                    <p-tag [value]="m.tipo" [severity]="m.tipo === 'ENTRADA' ? 'success' : 'danger'"></p-tag>
+                </td>
+                <td>{{ m.producto }}</td>
+                <td>{{ m.cantidad }}</td>
+                <td>{{ m.fecha }}</td>
+                <td><i class="pi pi-user mr-1"></i>{{ m.usuario }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

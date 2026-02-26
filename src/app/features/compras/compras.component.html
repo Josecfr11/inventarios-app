@@ -1,1 +1,29 @@
-<p>compras works!</p>
+<div class="card shadow-sm m-4">
+    <div class="flex justify-content-between align-items-center p-3">
+        <h3><i class="pi pi-receipt mr-2"></i>Órdenes de Compra</h3>
+        <p-button label="Nueva Compra" icon="pi pi-plus" severity="contrast"></p-button>
+    </div>
+    
+    <p-table [value]="compras" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Código OC</th>
+                <th>Proveedor</th>
+                <th>Fecha de Emisión</th>
+                <th>Monto Total</th>
+                <th>Estado</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-c>
+            <tr>
+                <td><strong>{{ c.id }}</strong></td>
+                <td>{{ c.proveedor }}</td>
+                <td>{{ c.fecha }}</td>
+                <td>{{ c.total | currency:'USD' }}</td>
+                <td>
+                    <p-tag [value]="c.estado" [severity]="getSeverity(c.estado)"></p-tag>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

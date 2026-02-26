@@ -1,1 +1,81 @@
-<p>usuarios works!</p>
+<p-toast></p-toast>
+
+<div class="main-content bg-gray-50 min-h-screen p-4">
+    <div class="surface-card shadow-2 border-round-2xl p-5 bg-white">
+        <div class="flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="m-0 text-900 font-bold">Gestión de Usuarios</h2>
+                <p class="text-500 m-0">Administra accesos, estados y credenciales del personal</p>
+            </div>
+            <p-button label="Nuevo Usuario" icon="pi pi-user-plus" severity="primary" [rounded]="true" class="shadow-2"></p-button>
+        </div>
+
+        <p-table [value]="usuarios" [rows]="10" [paginator]="true" styleClass="p-datatable-striped p-datatable-gridlines">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="bg-gray-50 text-700">ID</th>
+                    <th class="bg-gray-50 text-700">USUARIO</th>
+                    <th class="bg-gray-50 text-700">EMAIL</th>
+                    <th class="bg-gray-50 text-700">ROL</th>
+                    <th class="bg-gray-50 text-700 text-center">ESTADO</th>
+                    <th class="bg-gray-50 text-700 text-center">ACCIONES</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr>
+                    <td class="text-500 font-medium">#{{user.id}}</td>
+                    <td class="font-bold text-900">{{user.usuario}}</td>
+                    <td class="text-600">{{user.email}}</td>
+                    <td>
+                        <p-tag [value]="user.rol" severity="secondary" styleClass="px-3"></p-tag>
+                    </td>
+                    <td class="text-center">
+                        <p-tag [value]="user.estado" [severity]="getBadgeSeverity(user.estado)" [rounded]="true" styleClass="px-3 py-1 font-bold"></p-tag>
+                    </td>
+                    <td class="text-center">
+                        <div class="flex justify-content-center gap-2">
+                            <p-button [icon]="user.estado === 'ACTIVO' ? 'pi pi-user-minus' : 'pi pi-user-check'" 
+          [severity]="$any(getBtnSeverity(user.estado))"
+          [text]="true" 
+          [rounded]="true"
+          (onClick)="toggleEstado(user)"
+          pTooltip="Cambiar Estado" 
+          tooltipPosition="top">
+</p-button>
+                            
+                            <p-button icon="pi pi-key" severity="help" [text]="true" [rounded]="true"
+                                      (onClick)="abrirModalClave(user)"
+                                      pTooltip="Clave Temporal" tooltipPosition="top"></p-button>
+
+                            <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" 
+                                      pTooltip="Eliminar Usuario" tooltipPosition="top"></p-button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-dialog header="Seguridad: Clave Temporal" [(visible)]="displayClaveModal" [modal]="true" [style]="{width: '400px'}" [draggable]="false" [resizable]="false" styleClass="p-fluid">
+    <div class="flex flex-column gap-3 mt-3">
+        <div class="bg-blue-50 p-3 border-round-lg mb-2">
+            <p class="m-0 text-blue-700 text-sm">
+                <i class="pi pi-info-circle mr-2"></i>
+                Asignando clave para <strong>{{usuarioSeleccionado?.usuario}}</strong>. 
+                Se recomienda que el usuario la cambie en su primer inicio.
+            </p>
+        </div>
+        <div class="flex flex-column gap-2">
+            <label for="clave" class="font-bold text-700">Nueva Contraseña Temporal</label>
+            <span class="p-input-icon-left">
+                <i class="pi pi-lock"></i>
+                <input pInputText id="clave" type="password" [(ngModel)]="nuevaClave" placeholder="Escribe la nueva clave..." />
+            </span>
+        </div>
+        <div class="flex gap-2 mt-4">
+            <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [text]="true" (onClick)="displayClaveModal = false"></p-button>
+            <p-button label="Confirmar Cambio" icon="pi pi-check" (onClick)="guardarClaveTemporal()" class="flex-1"></p-button>
+        </div>
+    </div>
+</p-dialog>

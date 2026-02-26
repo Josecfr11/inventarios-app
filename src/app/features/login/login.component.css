@@ -1,0 +1,45 @@
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(180deg, #d3cfe9 0%, #eceaf3 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.login-card {
+    background: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 2rem;
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+}
+
+.logo-circle {
+    width: 60px;
+    height: 60px;
+    background: #f4f3ff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+/* Forzar que los inputs de PrimeNG se vean bien */
+:host ::ng-deep .p-inputtext {
+    width: 100% !important;
+    padding-left: 2.5rem !important;
+}
+
+/* Escalar para pantallas pequeñas (celulares) */
+@media screen and (max-height: 600px) {
+    .login-card {
+        padding: 1.5rem;
+        transform: scale(0.9);
+    }
+}

@@ -1,7 +1,46 @@
-<div class="card p-4" style="height: 100vh; background-color: azure;">
-    <span class="text-center fs-1">InventControl
-        <i class="pi pi-hammer fs-2" style="color: green"></i>
-    </span>
-    <p-menubar [model]="items" />
-    <router-outlet />
+<div class="header-container shadow-2 sticky-top" *ngIf="authService.isLoggedIn()">
+    <p-menubar [model]="items">
+        <ng-template pTemplate="start">
+            <div class="flex align-items-center brand-wrapper mr-4">
+                <div class="logo-container bg-primary border-round-xl shadow-2 p-2 mr-3 flex align-items-center justify-content-center">
+                    <i class="pi pi-shield text-white text-xl"></i>
+                </div>
+                <div class="flex flex-column mr-4">
+                    <span class="brand-title font-black text-2xl tracking-tighter line-height-1">InventControl</span>
+                    <span class="text-500 text-xs font-bold uppercase tracking-widest">Sistemas TI</span>
+                </div>
+                <div class="divider-v hidden md:block"></div>
+            </div>
+        </ng-template>
+        
+        <ng-template pTemplate="end">
+            <div class="user-profile-card flex align-items-center gap-3 bg-gray-50 p-2 border-round-3xl px-4 border-1 border-200">
+                <div class="flex flex-column text-right mr-1">
+                    <span class="font-bold text-sm text-900">{{ authService.getUserName() }}</span>
+                    <div class="flex justify-content-end mt-1">
+                        <span [class]="'role-badge ' + (authService.getRole() === 'ADMIN' ? 'badge-admin' : 'badge-employee')">
+                            <i [class]="authService.getRole() === 'ADMIN' ? 'pi pi-star-fill' : 'pi pi-user'" 
+                               style="font-size: 0.65rem" class="mr-1"></i>
+                            {{ authService.getRole() }}
+                        </span>
+                    </div>
+                </div>
+
+                <p-button icon="pi pi-power-off" 
+                          [rounded]="true" 
+                          [text]="true" 
+                          severity="danger" 
+                          pTooltip="Cerrar Sesión" 
+                          tooltipPosition="bottom"
+                          (onClick)="authService.logout()">
+                </p-button>
+            </div>
+        </ng-template>
+    </p-menubar>
+</div>
+
+<div class="main-layout-bg">
+    <div class="p-4 container-main">
+        <router-outlet></router-outlet>
+    </div>
 </div>
