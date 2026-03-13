@@ -1,29 +1,74 @@
-<div class="card shadow-sm m-4">
-    <div class="flex justify-content-between align-items-center p-3">
-        <h3><i class="pi pi-receipt mr-2"></i>Órdenes de Compra</h3>
-        <p-button label="Nueva Compra" icon="pi pi-plus" severity="contrast"></p-button>
+<div class="p-4">
+  <div class="flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="m-0 font-bold">Órdenes de Compra</h2>
+      <p class="text-500 text-sm">Gestión de suministros y reabastecimiento</p>
     </div>
-    
-    <p-table [value]="compras" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>Código OC</th>
-                <th>Proveedor</th>
-                <th>Fecha de Emisión</th>
-                <th>Monto Total</th>
-                <th>Estado</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-c>
-            <tr>
-                <td><strong>{{ c.id }}</strong></td>
-                <td>{{ c.proveedor }}</td>
-                <td>{{ c.fecha }}</td>
-                <td>{{ c.total | currency:'USD' }}</td>
-                <td>
-                    <p-tag [value]="c.estado" [severity]="getSeverity(c.estado)"></p-tag>
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+    <p-button label="Nueva Compra" icon="pi pi-plus" (onClick)="displayModal = true" severity="primary" [rounded]="true"></p-button>
+  </div>
+
+  <p-table [value]="compras" styleClass="p-datatable-striped shadow-1 border-round-xl overflow-hidden">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>ID</th>
+        <th>PROVEEDOR</th>
+        <th>FECHA</th>
+        <th class="text-right">TOTAL</th>
+        <th class="text-center">ESTADO</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-compra>
+      <tr>
+        <td class="font-medium text-blue-600">{{compra.id}}</td>
+        <td>{{compra.proveedor}}</td>
+        <td>{{compra.fecha}}</td>
+        <td class="text-right font-bold">{{compra.total | currency:'USD'}}</td>
+        <td class="text-center">
+          <p-tag [value]="compra.estado" [severity]="getSeverity(compra.estado)" [rounded]="true"></p-tag>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<p-dialog header="Registrar Nueva Orden" [(visible)]="displayModal" [modal]="true" [style]="{width: '500px'}" [draggable]="false" [resizable]="false">
+  <div class="container-fluid">
+    <div class="row">
+      <form [formGroup]="comprasForm" (ngSubmit)="agregarEditarCompra()">
+        <div class="row">
+          
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Seleccionar Proveedor</label>
+            <input type="text" pInputText required fluid formControlName="proveedor" placeholder="Nombre del proveedor" />
+          </div>
+          
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Fecha</label>
+            <div>
+              <p-datepicker dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true" formControlName="fecha" fluid />
+            </div>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Total</label>
+            <input type="text" pInputText required fluid formControlName="total" placeholder="0.00" />
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Observaciones</label>
+            <input type="text" pInputText fluid formControlName="observaciones" placeholder="Ej: Pedido urgente de herramientas" />
+          </div>
+
+        </div>
+
+        <div class="row mt-4">
+          <div class="col justify-content-end" style="display: flex; gap: 8px;">
+            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayModal = false" />
+            <p-button type="submit" label="Guardar Orden" icon="pi pi-save" [disabled]="comprasForm.invalid" />
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</p-dialog>

@@ -1,27 +1,72 @@
-<div class="card shadow-sm m-4">
-    <div class="flex justify-content-between align-items-center p-3">
-        <h3><i class="pi pi-users mr-2"></i>Directorio de Proveedores</h3>
-        <p-button label="Agregar Proveedor" icon="pi pi-user-plus"></p-button>
+<div class="card shadow-sm m-4 border-none">
+  <div class="flex justify-content-between align-items-center p-3">
+    <div>
+      <h3 class="m-0 font-bold"><i class="pi pi-users mr-2"></i>Directorio de Proveedores</h3>
+      <p class="text-500 text-sm">Gestión de contactos y suministros industriales</p>
     </div>
+    <p-button label="Agregar Proveedor" icon="pi pi-user-plus" (onClick)="displayModal = true" severity="success" [rounded]="true"></p-button>
+  </div>
 
-    <p-table [value]="proveedores" [tableStyle]="{ 'min-width': '50rem' }">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>RUC / ID</th>
-                <th>Razón Social</th>
-                <th>Contacto</th>
-                <th>Teléfono</th>
-                <th>Rubro</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-p>
-            <tr>
-                <td>{{ p.ruc }}</td>
-                <td>{{ p.nombre }}</td>
-                <td>{{ p.contacto }}</td>
-                <td>{{ p.telf }}</td>
-                <td><p-tag [value]="p.rubro" severity="secondary"></p-tag></td>
-            </tr>
-        </ng-template>
-    </p-table>
+  <p-table [value]="proveedores" styleClass="p-datatable-striped shadow-1">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>RUC / ID</th>
+        <th>Razón Social</th>
+        <th>Contacto</th>
+        <th>Teléfono</th>
+        <th>Rubro</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-p>
+      <tr>
+        <td class="font-bold text-blue-600">{{ p.ruc }}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.contacto }}</td>
+        <td>{{ p.telf }}</td>
+        <td><p-tag [value]="p.rubro" severity="secondary" [rounded]="true"></p-tag></td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<p-dialog header="Registrar Nuevo Proveedor" [(visible)]="displayModal" [modal]="true" [style]="{width: '500px'}" [draggable]="false" [resizable]="false">
+  <div class="container-fluid">
+    <div class="row">
+      <form [formGroup]="proveedoresForm">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">RUC / ID Identificación</label>
+            <input type="text" pInputText required fluid formControlName="ruc" placeholder="Ej: 20123456789" />
+          </div>
+          
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Razón Social</label>
+            <input type="text" pInputText required fluid formControlName="nombre" placeholder="Nombre de la empresa" />
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Persona de Contacto</label>
+            <input type="text" pInputText required fluid formControlName="contacto" placeholder="Nombre del contacto" />
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Teléfono</label>
+            <input type="text" pInputText required fluid formControlName="telf" placeholder="999-999-999" />
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="block font-bold mb-2">Rubro</label>
+            <input type="text" pInputText required fluid formControlName="rubro" placeholder="Ej: Electricidad" />
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col justify-content-end" style="display: flex; gap: 8px;">
+            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayModal = false" />
+            <p-button type="submit" label="Guardar Proveedor" icon="pi pi-save" />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</p-dialog>
