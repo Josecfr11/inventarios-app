@@ -12,11 +12,11 @@ import { AuthService } from './auth.service';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    MenubarModule, 
-    ButtonModule, 
-    CommonModule, 
-    TagModule, 
+    RouterOutlet,
+    MenubarModule,
+    ButtonModule,
+    CommonModule,
+    TagModule,
     TooltipModule
   ],
   templateUrl: './app.component.html',
@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
       this.items.push(
         { label: 'Compras', icon: 'pi pi-receipt', command: () => this.router.navigate(['/compras']) },
         { label: 'Proveedores', icon: 'pi pi-users', command: () => this.router.navigate(['/proveedores']) },
+        { label: 'Clientes', icon: 'pi pi-users', command: () => this.router.navigate(['/clientes']) },
         { label: 'Gestión de Usuarios', icon: 'pi pi-user', command: () => this.router.navigate(['/usuarios']) }
       );
     }

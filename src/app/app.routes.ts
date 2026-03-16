@@ -7,12 +7,13 @@ import { MovimientosComponent } from './features/movimientos/movimientos.compone
 import { ProveedoresComponent } from './features/proveedores/proveedores.component';
 import { UsuariosComponent } from './features/usuarios/usuarios.component';
 import { VentasComponent } from './features/ventas/ventas.component';
+import { ClientesComponent } from './features/clientes/clientes.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
-    { 
-        path: '', 
-        canActivate: [authGuard], 
+    {
+        path: '',
+        canActivate: [authGuard],
         children: [
             { path: 'inventario', component: InventarioListComponent },
             { path: 'compras', component: ComprasComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
             { path: 'proveedores', component: ProveedoresComponent },
             { path: 'usuarios', component: UsuariosComponent },
             { path: 'ventas', component: VentasComponent },
+            { path: 'clientes', component: ClientesComponent },
             { path: '', redirectTo: 'inventario', pathMatch: 'full' }
         ]
     },

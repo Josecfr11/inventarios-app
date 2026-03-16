@@ -1,0 +1,53 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+
+<p-toolbar styleClass="mb-4">
+  <ng-template #start>
+    <p-button label="Nuevo Cliente" icon="pi pi-user-plus" class="mr-2" (onClick)="show()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="clientes" [rows]="10" [paginator]="true" [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true"
+  dataKey="id" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
+  [showCurrentPageReport]="true">
+
+  <ng-template #caption>
+    <div class="flex items-center justify-between">
+      <h5 class="m-0 fw-bold">Directorio de Clientes</h5>
+    </div>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th pSortableColumn="nombre">Nombre / Razón Social <p-sortIcon field="nombre" /></th>
+      <th pSortableColumn="contacto">Contacto <p-sortIcon field="contacto" /></th>
+      <th pSortableColumn="telefono">Teléfono <p-sortIcon field="telefono" /></th>
+      <th pSortableColumn="tipo">Tipo <p-sortIcon field="tipo" /></th>
+      <th class="text-center">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-cliente>
+    <tr>
+      <td class="font-bold text-primary">{{ cliente.nombre }}</td>
+      <td>{{ cliente.contacto || 'N/A' }}</td>
+      <td>
+        <i class="pi pi-phone text-secondary me-2" *ngIf="cliente.telefono"></i>
+        {{ cliente.telefono || 'Sin registro' }}
+      </td>
+      <td>
+        <p-tag [value]="cliente.tipo" [severity]="cliente.tipo === 'Empresa' ? 'info' : 'success'"></p-tag>
+      </td>
+      <td class="text-center">
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" (onClick)="show(cliente)" />
+        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Dar de baja" (onClick)="eliminar(cliente)" />
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5" class="text-center p-4 text-muted">No hay clientes registrados o activos.</td>
+    </tr>
+  </ng-template>
+</p-table>
