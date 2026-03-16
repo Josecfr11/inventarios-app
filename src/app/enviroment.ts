@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api',
-  imagesUrl: 'http://localhost:8080'
+  apiUrl: 'https://inventcontrol-backend-1.onrender.com/api',
+  imagesUrl: 'https://inventcontrol-backend-1.onrender.com'
 };
