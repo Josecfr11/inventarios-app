@@ -1,53 +1,73 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'; // Importaciones necesarias
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ProveedoresService } from '../../services/proveedores.service';
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, // Vital para que funcione proveedoresForm
-    TableModule, 
-    ButtonModule, 
-    TagModule,
-    DialogModule,
-    InputTextModule
+    CommonModule, ReactiveFormsModule, TableModule, ButtonModule,
+    TagModule, DialogModule, InputTextModule, ToastModule, ConfirmDialogModule
   ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './proveedores.component.html',
   styleUrl: './proveedores.component.css'
 })
 export class ProveedoresComponent implements OnInit {
-  
-  // 1. Definimos la propiedad que el HTML está buscando
+
   proveedoresForm!: FormGroup;
   displayModal: boolean = false;
+  proveedores: any[] = [];
+  esEdicion: boolean = false;
+  idProveedorEditado: number | null = null;
 
-  proveedores = [
-    { ruc: '20123456789', nombre: 'Suministros Industriales S.A.', contacto: 'Carlos Ruiz', telf: '987654321', rubro: 'Electricidad' },
-    { ruc: '20987654321', nombre: 'Ferretería Central', contacto: 'Ana López', telf: '912345678', rubro: 'Construcción' },
-    { ruc: '20555666777', nombre: 'Global Tools', contacto: 'Marcos Peña', telf: '944555666', rubro: 'Herramientas' }
-  ];
-
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private proveedoresService: ProveedoresService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
+  ) {}
 
   ngOnInit(): void {
-    // 2. Inicializamos el formulario con los mismos nombres que pusiste en el HTML
+    this.cargarProveedores();
+
     this.proveedoresForm = this.fb.group({
-      ruc: ['', Validators.required],
       nombre: ['', Validators.required],
       contacto: ['', Validators.required],
-      telf: ['', Validators.required],
-      rubro: ['', Validators.required]
+      telefono: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      direccion: ['', Validators.required],
+      tipoProducto: ['', Validators.required]
     });
   }
 
-  abrirModal() {
+  cargarProveedores() {
+    this.proveedoresService.getAll().subscribe({
+      next: (data) => this.proveedores = data,
+      error: () => this.mostrarToast('error', 'Error', 'No se pudo cargar la lista')
+    });
+  }
+
+  abrirModalNuevo() {
+    this.esEdicion = false;
+    this.idProveedorEditado = null;
+    this.proveedoresForm.reset();
+    this.displayModal = true;
+  }
+
+  abrirModalEditar(proveedor: any) {
+    this.esEdicion = true;
+    this.idProveedorEditado = proveedor.id;
+    this.proveedoresForm.patchValue(proveedor);
     this.displayModal = true;
   }
 
@@ -57,10 +77,52 @@ export class ProveedoresComponent implements OnInit {
   }
 
   agregarEditarProveedor() {
-    if (this.proveedoresForm.valid) {
-      console.log('Datos del proveedor:', this.proveedoresForm.value);
-      // Aquí iría la lógica para guardar en el backend
-      this.cerrarModal();
+    if (this.proveedoresForm.invalid) {
+      this.proveedoresForm.markAllAsTouched();
+      return;
     }
+
+    const payload = this.proveedoresForm.value;
+
+    if (this.esEdicion && this.idProveedorEditado) {
+      this.proveedoresService.update(this.idProveedorEditado, payload).subscribe({
+        next: () => {
+          this.mostrarToast('success', 'Actualizado', 'Proveedor editado con éxito');
+          this.cargarProveedores();
+          this.cerrarModal();
+        },
+        error: () => this.mostrarToast('error', 'Error', 'No se pudo editar')
+      });
+    } else {
+      this.proveedoresService.create(payload).subscribe({
+        next: () => {
+          this.mostrarToast('success', 'Guardado', 'Proveedor registrado con éxito');
+          this.cargarProveedores();
+          this.cerrarModal();
+        },
+        error: () => this.mostrarToast('error', 'Error', 'No se pudo guardar')
+      });
+    }
+  }
+
+  eliminar(proveedor: any) {
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de que deseas eliminar a ${proveedor.nombre}?`,
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.proveedoresService.delete(proveedor.id).subscribe({
+          next: () => {
+            this.mostrarToast('success', 'Eliminado', 'Proveedor eliminado con éxito');
+            this.cargarProveedores();
+          },
+          error: () => this.mostrarToast('error', 'Error', 'No se pudo eliminar')
+        });
+      }
+    });
+  }
+
+  mostrarToast(severidad: string, resumen: string, detalle: string) {
+    this.messageService.add({ severity: severidad, summary: resumen, detail: detalle, life: 3000 });
   }
 }
