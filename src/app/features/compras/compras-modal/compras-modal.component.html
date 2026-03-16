@@ -1,0 +1,89 @@
+<div class="container-fluid p-2">
+  <form [formGroup]="comprasForm" (ngSubmit)="guardar()">
+
+    <h5 class="text-primary fw-bold mb-3 border-bottom pb-2">Datos de la Orden</h5>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">N° Orden / Factura <span class="text-danger">*</span></label>
+        <input type="text" pInputText class="w-100" formControlName="numeroOrden" placeholder="Ej: OC-1001" />
+      </div>
+
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">Proveedor <span class="text-danger">*</span></label>
+        <p-dropdown [options]="proveedores" formControlName="proveedorId" optionLabel="nombre" optionValue="id"
+                    placeholder="Seleccionar proveedor" appendTo="body" styleClass="w-100" class="w-100" [filter]="true" filterBy="nombre"></p-dropdown>
+      </div>
+
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">Estado</label>
+        <p-select formControlName="estado" [options]="estados" appendTo="body" styleClass="w-100" class="w-100"></p-select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">Observaciones</label>
+        <input type="text" pInputText class="w-100" formControlName="observaciones" placeholder="Ej: Pedido urgente" />
+      </div>
+    </div>
+
+    <h5 class="text-primary fw-bold mb-3 border-bottom pb-2">Herramientas a Comprar</h5>
+
+    <div class="row g-2 align-items-end mb-3 bg-light p-3 rounded border">
+      <div class="col-md-7">
+        <label class="block font-bold mb-1 text-sm">Buscar Herramienta</label>
+        <p-dropdown [options]="herramientas" [(ngModel)]="herramientaSeleccionada" [ngModelOptions]="{standalone: true}"
+                    optionLabel="nombre" placeholder="Selecciona..." appendTo="body" styleClass="w-100" class="w-100" [filter]="true" filterBy="nombre">
+        </p-dropdown>
+      </div>
+      <div class="col-md-3">
+        <label class="block font-bold mb-1 text-sm">Cantidad a ingresar</label>
+        <input type="number" pInputText class="w-100" [(ngModel)]="cantidadSeleccionada" [ngModelOptions]="{standalone: true}" min="1" />
+      </div>
+      <div class="col-md-2">
+        <p-button icon="pi pi-plus" label="Agregar" styleClass="p-button-success w-100" (onClick)="agregarDetalle()" [disabled]="!herramientaSeleccionada"></p-button>
+      </div>
+    </div>
+
+    <p-table [value]="detallesFormArray.controls" responsiveLayout="scroll" styleClass="p-datatable-sm border mb-3">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Herramienta</th>
+          <th>Cant.</th>
+          <th>Costo Unit.</th>
+          <th>Subtotal</th>
+          <th class="text-center">Quitar</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-detalle let-i="rowIndex">
+        <tr [formGroup]="detalle">
+          <td>{{ detalle.get('nombreHerramienta')?.value }}</td>
+          <td>{{ detalle.get('cantidad')?.value }}</td>
+          <td>{{ detalle.get('precioUnitarioCompra')?.value | currency:'USD' }}</td>
+          <td class="fw-bold text-primary">{{ detalle.get('subtotal')?.value | currency:'USD' }}</td>
+          <td class="text-center">
+            <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text p-button-sm" (onClick)="eliminarDetalle(i)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center text-muted p-3">Agrega las herramientas que llegaron en esta compra.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="row align-items-center mb-4">
+      <div class="col text-end">
+        <h3 class="m-0 fw-bold text-success">Total Orden: {{ comprasForm.get('total')?.value | currency:'USD' }}</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col d-flex justify-content-end gap-2">
+        <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-secondary p-button-text" (onClick)="ref.close()"></p-button>
+        <p-button type="submit" label="Procesar Compra" icon="pi pi-check" [disabled]="comprasForm.invalid || detallesFormArray.length === 0"></p-button>
+      </div>
+    </div>
+
+  </form>
+</div>
