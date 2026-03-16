@@ -1,4 +1,5 @@
 <p-toast></p-toast>
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
 <div class="main-content bg-gray-50 min-h-screen p-4">
   <div class="surface-card shadow-2 border-round-2xl p-5 bg-white">
@@ -13,8 +14,8 @@
     <p-table [value]="usuarios" [rows]="10" [paginator]="true" styleClass="p-datatable-striped p-datatable-gridlines shadow-1">
       <ng-template pTemplate="header">
         <tr>
-          <th class="bg-gray-50 text-700">ID</th>
           <th class="bg-gray-50 text-700">USUARIO</th>
+          <th class="bg-gray-50 text-700">NOMBRE COMPLETO</th>
           <th class="bg-gray-50 text-700">EMAIL</th>
           <th class="bg-gray-50 text-700">ROL</th>
           <th class="bg-gray-50 text-700 text-center">ESTADO</th>
@@ -23,25 +24,25 @@
       </ng-template>
       <ng-template pTemplate="body" let-user>
         <tr>
-          <td class="text-500 font-medium">#{{user.id}}</td>
-          <td class="font-bold text-900">{{user.usuario}}</td>
+          <td class="font-bold text-900">{{user.username}}</td>
+          <td>{{user.nombreCompleto}}</td>
           <td class="text-600">{{user.email}}</td>
           <td>
             <p-tag [value]="user.rol" severity="secondary" styleClass="px-3"></p-tag>
           </td>
           <td class="text-center">
-            <p-tag [value]="user.estado" [severity]="getBadgeSeverity(user.estado)" [rounded]="true" styleClass="px-3 py-1 font-bold"></p-tag>
+            <p-tag [value]="user.activo ? 'ACTIVO' : 'INACTIVO'" [severity]="user.activo ? 'warn' : 'success'" [rounded]="true" styleClass="px-3 py-1 font-bold"></p-tag>
           </td>
           <td class="text-center">
             <div class="flex justify-content-center gap-2">
-              <p-button [icon]="user.estado === 'ACTIVO' ? 'pi pi-user-minus' : 'pi pi-user-check'" 
-                [severity]="$any(getBtnSeverity(user.estado))" [text]="true" [rounded]="true"
+              <p-button [icon]="user.activo ? 'pi pi-user-minus' : 'pi pi-user-check'"
+                [severity]="user.activo ? 'warn' : 'success'" [text]="true" [rounded]="true"
                 (onClick)="toggleEstado(user)" pTooltip="Cambiar Estado" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-key" severity="help" [text]="true" [rounded]="true"
                 (onClick)="abrirModalClave(user)" pTooltip="Clave Temporal" tooltipPosition="top"></p-button>
-              <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" 
-                pTooltip="Eliminar Usuario" tooltipPosition="top"></p-button>
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true"
+                (onClick)="eliminar(user)" pTooltip="Eliminar Usuario" tooltipPosition="top"></p-button>
             </div>
           </td>
         </tr>
@@ -51,56 +52,55 @@
 </div>
 
 <p-dialog header="Registrar Nuevo Usuario" [(visible)]="displayNuevoModal" [modal]="true" [style]="{width: '500px'}" [draggable]="false" [resizable]="false">
-  <div class="container-fluid">
-    <div class="row">
-      <form [formGroup]="usuariosForm" (ngSubmit)="agregarUsuario()">
-        <div class="row">
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Nombre de Usuario</label>
-            <input type="text" pInputText required fluid formControlName="usuario" placeholder="Ej: admin_sistema" />
-          </div>
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Correo Electrónico</label>
-            <input type="email" pInputText required fluid formControlName="email" placeholder="usuario@empresa.com" />
-          </div>
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Rol de Acceso</label>
-            <p-select formControlName="rol" [options]="roles" placeholder="Selecciona un rol" fluid [showClear]="true"></p-select>
-          </div>
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Contraseña Inicial</label>
-            <input type="password" pInputText required fluid formControlName="password" placeholder="Mínimo 6 caracteres" />
-          </div>
+  <div class="container-fluid mt-2">
+    <form [formGroup]="usuariosForm">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="block font-bold mb-1">Nombre Completo <span class="text-danger">*</span></label>
+          <input type="text" pInputText required class="w-100" formControlName="nombreCompleto" placeholder="Ej: Juan Pérez" />
         </div>
-        <div class="row mt-4">
-          <div class="col justify-content-end" style="display: flex; gap: 8px;">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayNuevoModal = false"></p-button>
-            <p-button type="submit" label="Guardar Usuario" icon="pi pi-save" [disabled]="usuariosForm.invalid"></p-button>
-          </div>
+        <div class="col-md-6">
+          <label class="block font-bold mb-1">Nombre de Usuario <span class="text-danger">*</span></label>
+          <input type="text" pInputText required class="w-100" formControlName="username" placeholder="Ej: jperez" />
         </div>
-      </form>
-    </div>
+        <div class="col-md-6">
+          <label class="block font-bold mb-1">Rol de Acceso <span class="text-danger">*</span></label>
+          <p-dropdown formControlName="rol" [options]="roles" placeholder="Selecciona un rol" styleClass="w-100" class="w-100" appendTo="body"></p-dropdown>
+        </div>
+        <div class="col-12">
+          <label class="block font-bold mb-1">Correo Electrónico <span class="text-danger">*</span></label>
+          <input type="email" pInputText required class="w-100" formControlName="email" placeholder="usuario@empresa.com" />
+        </div>
+        <div class="col-12">
+          <label class="block font-bold mb-1">Contraseña Inicial <span class="text-danger">*</span></label>
+          <input type="password" pInputText required class="w-100" formControlName="password" placeholder="Mínimo 6 caracteres" />
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col d-flex justify-content-end gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayNuevoModal = false"></p-button>
+          <p-button label="Guardar Usuario" icon="pi pi-save" (onClick)="agregarUsuario()" [disabled]="usuariosForm.invalid"></p-button>
+        </div>
+      </div>
+    </form>
   </div>
 </p-dialog>
 
 <p-dialog header="Seguridad: Clave Temporal" [(visible)]="displayClaveModal" [modal]="true" [style]="{width: '450px'}" [draggable]="false" [resizable]="false">
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-12 bg-blue-50 p-3 border-round-lg mb-3">
+    <div class="row g-3">
+      <div class="col-12 bg-blue-50 p-3 border-round-lg">
         <p class="m-0 text-blue-700 text-sm">
-          <i class="pi pi-info-circle mr-2"></i>
-          Asignando clave para <strong>{{usuarioSeleccionado?.usuario}}</strong>.
+          <i class="pi pi-info-circle mr-2"></i> Asignando clave para <strong>{{usuarioSeleccionado?.username}}</strong>.
         </p>
       </div>
-      <div class="col-12 mb-3">
-        <label class="block font-bold mb-2">Nueva Contraseña Temporal</label>
-        <input pInputText type="password" [(ngModel)]="nuevaClave" placeholder="Escribe la nueva clave..." fluid />
+      <div class="col-12">
+        <label class="block font-bold mb-1">Nueva Contraseña Temporal</label>
+        <input pInputText type="password" [(ngModel)]="nuevaClave" placeholder="Escribe la nueva clave..." class="w-100" />
       </div>
-      <div class="col-12 mt-3 text-right">
-        <div class="flex justify-content-end gap-2">
-          <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayClaveModal = false"></p-button>
-          <p-button label="Confirmar Cambio" icon="pi pi-check" (onClick)="guardarClaveTemporal()"></p-button>
-        </div>
+      <div class="col-12 mt-3 d-flex justify-content-end gap-2">
+        <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayClaveModal = false"></p-button>
+        <p-button label="Confirmar Cambio" icon="pi pi-check" (onClick)="guardarClaveTemporal()"></p-button>
       </div>
     </div>
   </div>

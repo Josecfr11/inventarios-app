@@ -1,62 +1,110 @@
 <p-toast></p-toast>
 
 <div class="login-wrapper">
-    <div class="login-card shadow-6">
-        
-        <div class="header-section">
-            <div class="logo-box">
-                <i class="pi pi-shield text-primary text-3xl"></i>
-            </div>
-            <h1 class="text-900 font-bold text-2xl m-0">InventControl</h1>
-            <p class="text-500 font-medium text-xs mt-1">Gestión de Activos</p>
-        </div>
+  <div class="login-card shadow-6">
 
-        <div class="form-section">
-            <div class="field mb-2">
-                <label for="user" class="block text-900 font-semibold mb-1 text-xs text-left">Usuario</label>
-                <span class="p-input-icon-left w-full">
-                    <i class="pi pi-user text-primary"></i>
-                    <input id="user" type="text" pInputText class="w-full border-round-lg" [(ngModel)]="usuario" placeholder="admin">
-                </span>
-            </div>
-
-            <div class="field mb-2">
-                <label for="pass" class="block text-900 font-semibold mb-1 text-xs text-left">Contraseña</label>
-                <span class="p-input-icon-left w-full">
-                    <i class="pi pi-lock text-primary"></i>
-                    <input id="pass" type="password" pInputText class="w-full border-round-lg" [(ngModel)]="clave" placeholder="••••••••" (keyup.enter)="handleLogin()">
-                </span>
-            </div>
-
-            <div class="flex align-items-center justify-content-between mb-3">
-                <p-checkbox id="rem" [binary]="true" label="Recordar" class="text-xs"></p-checkbox>
-                <p-button label="Soporte TI" [link]="true" styleClass="p-0 text-xs font-bold" (onClick)="showSoporte = true"></p-button>
-            </div>
-
-            <p-button label="INGRESAR" icon="pi pi-sign-in" severity="success"
-                      styleClass="w-full border-round-lg py-2 font-bold" (onClick)="handleLogin()">
-            </p-button>
-        </div>
-
-        <div class="footer-section mt-3 border-top-1 border-100 pt-2">
-            <span class="text-400 text-xs font-semibold uppercase">Acceso Protegido</span>
-        </div>
+    <div class="header-section">
+      <div class="logo-box">
+        <i class="pi pi-shield text-primary text-3xl"></i>
+      </div>
+      <h1 class="text-900 font-bold text-2xl m-0">InventControl</h1>
+      <p class="text-500 font-medium text-xs mt-1">Gestión de Activos</p>
     </div>
+
+    <div class="form-section">
+      <div class="field mb-2">
+        <label for="user" class="block text-900 font-semibold mb-1 text-xs text-left">Usuario</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-user text-primary"></i>
+          <input id="user" type="text" pInputText class="w-full border-round-lg" [(ngModel)]="usuario" placeholder="admin">
+        </span>
+      </div>
+
+      <div class="field mb-2">
+        <label for="pass" class="block text-900 font-semibold mb-1 text-xs text-left">Contraseña</label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-lock text-primary"></i>
+          <input id="pass" type="password" pInputText class="w-full border-round-lg" [(ngModel)]="clave" placeholder="••••••••" (keyup.enter)="handleLogin()">
+        </span>
+      </div>
+
+      <div class="flex align-items-center justify-content-between mb-3">
+        <p-checkbox id="rem" [binary]="true" label="Recordar" class="text-xs" [(ngModel)]="recordar"></p-checkbox>
+        <p-button label="Soporte TI" [link]="true" styleClass="p-0 text-xs font-bold" (onClick)="showSoporte = true"></p-button>
+      </div>
+
+      <p-button label="INGRESAR" icon="pi pi-sign-in" severity="success"
+        styleClass="w-full border-round-lg py-2 font-bold" (onClick)="handleLogin()" [loading]="cargando">
+      </p-button>
+
+      <div class="text-center mt-3">
+        <span class="text-500 text-xs font-semibold">¿No tienes una cuenta? </span>
+        <a class="font-bold no-underline text-primary cursor-pointer text-xs" (click)="abrirModalRegistro()">
+          Regístrate aquí
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-section mt-3 border-top-1 border-100 pt-2 text-center">
+      <span class="text-400 text-xs font-semibold uppercase">Acceso Protegido</span>
+    </div>
+  </div>
 </div>
 
 <p-dialog header="Soporte Técnico" [(visible)]="showSoporte" [modal]="true" [style]="{ width: '350px' }" [draggable]="false" [resizable]="false">
-    <div class="flex flex-column align-items-center text-center gap-3">
-        <i class="pi pi-info-circle text-primary text-5xl"></i>
-        <p class="m-0 line-height-3">Para recuperación de contraseñas o problemas técnicos, contacte al administrador:</p>
-        <div class="bg-blue-50 p-3 border-round-lg w-full">
-            <div class="flex align-items-center gap-2 mb-2">
-                <i class="pi pi-envelope text-primary"></i>
-                <span class="font-bold">soporte&#64;inventcontrol.com</span>
-            </div>
-            <div class="flex align-items-center gap-2">
-                <i class="pi pi-phone text-primary"></i>
-                <span class="font-bold">+51 987 654 321</span>
-            </div>
-        </div>
+  <div class="flex flex-column align-items-center text-center gap-3">
+    <i class="pi pi-info-circle text-primary text-5xl"></i>
+    <p class="m-0 line-height-3 text-sm">Para recuperación de contraseñas o problemas técnicos, contacte al administrador:</p>
+    <div class="bg-blue-50 p-3 border-round-lg w-full">
+      <div class="flex align-items-center gap-2 mb-2">
+        <i class="pi pi-envelope text-primary"></i>
+        <span class="font-bold text-sm">soporte&#64;inventcontrol.com</span>
+      </div>
+      <div class="flex align-items-center gap-2">
+        <i class="pi pi-phone text-primary"></i>
+        <span class="font-bold text-sm">+51 987 654 321</span>
+      </div>
     </div>
+  </div>
+</p-dialog>
+
+<p-dialog header="Registrar Cuenta" [(visible)]="displayRegistro" [modal]="true" [style]="{ width: '400px' }" [draggable]="false" [resizable]="false">
+  <div class="mt-2">
+    <p class="text-500 text-sm m-0 mb-3 text-center">Complete sus datos para solicitar acceso.</p>
+
+    <form [formGroup]="registroForm">
+      <div class="flex flex-column gap-2 mb-3">
+
+        <div class="field mb-1">
+          <label class="block text-900 font-semibold mb-1 text-xs">Nombre Completo <span class="text-red-500">*</span></label>
+          <input type="text" pInputText formControlName="nombreCompleto" placeholder="Ej: Juan Pérez" class="w-full border-round-lg p-inputtext-sm" />
+          <small class="text-red-500 text-xs" *ngIf="registroForm.get('nombreCompleto')?.invalid && registroForm.get('nombreCompleto')?.touched">Obligatorio.</small>
+        </div>
+
+        <div class="field mb-1">
+          <label class="block text-900 font-semibold mb-1 text-xs">Usuario <span class="text-red-500">*</span></label>
+          <input type="text" pInputText formControlName="username" placeholder="Ej: jperez" class="w-full border-round-lg p-inputtext-sm" />
+          <small class="text-red-500 text-xs" *ngIf="registroForm.get('username')?.invalid && registroForm.get('username')?.touched">Obligatorio.</small>
+        </div>
+
+        <div class="field mb-1">
+          <label class="block text-900 font-semibold mb-1 text-xs">Correo Electrónico <span class="text-red-500">*</span></label>
+          <input type="email" pInputText formControlName="email" placeholder="correo@empresa.com" class="w-full border-round-lg p-inputtext-sm" />
+          <small class="text-red-500 text-xs" *ngIf="registroForm.get('email')?.invalid && registroForm.get('email')?.touched">Correo inválido.</small>
+        </div>
+
+        <div class="field mb-1">
+          <label class="block text-900 font-semibold mb-1 text-xs">Contraseña <span class="text-red-500">*</span></label>
+          <input type="password" pInputText formControlName="password" placeholder="Mínimo 6 caracteres" class="w-full border-round-lg p-inputtext-sm" />
+          <small class="text-red-500 text-xs" *ngIf="registroForm.get('password')?.invalid && registroForm.get('password')?.touched">Mínimo 6 caracteres.</small>
+        </div>
+
+      </div>
+
+      <div class="flex justify-content-end gap-2 pt-2 border-top-1 border-100">
+        <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" styleClass="p-button-sm font-bold" (onClick)="displayRegistro = false" [disabled]="cargandoRegistro"></p-button>
+        <p-button label="Registrarme" icon="pi pi-check" styleClass="p-button-sm border-round-lg font-bold" (onClick)="registrarUsuario()" [disabled]="registroForm.invalid" [loading]="cargandoRegistro"></p-button>
+      </div>
+    </form>
+  </div>
 </p-dialog>
