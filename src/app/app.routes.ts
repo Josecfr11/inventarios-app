@@ -14,13 +14,13 @@ export const routes: Routes = [
         path: '', 
         canActivate: [authGuard], 
         children: [
-            { path: '#/inventario', component: InventarioListComponent },
-            { path: '#/compras', component: ComprasComponent },
-            { path: '#/movimientos', component: MovimientosComponent },
-            { path: '#/proveedores', component: ProveedoresComponent },
-            { path: '#/usuarios', component: UsuariosComponent },
-            { path: '#/ventas', component: VentasComponent },
-            { path: '#/', redirectTo: 'inventario', pathMatch: 'full' }
+            { path: 'inventario', component: InventarioListComponent },
+            { path: 'compras', component: ComprasComponent },
+            { path: 'movimientos', component: MovimientosComponent },
+            { path: 'proveedores', component: ProveedoresComponent },
+            { path: 'usuarios', component: UsuariosComponent },
+            { path: 'ventas', component: VentasComponent },
+            { path: '', redirectTo: 'inventario', pathMatch: 'full' }
         ]
     },
     { path: '**', redirectTo: 'login' }
