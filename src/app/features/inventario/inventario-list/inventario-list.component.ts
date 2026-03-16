@@ -38,7 +38,7 @@ export class InventarioListComponent implements OnInit {
 
   ngOnInit() {
     this.cargarHerramientas();
-    this.api = environment.apiUrl;
+    this.api = environment.imagesUrl;
   }
 
   cargarHerramientas() {

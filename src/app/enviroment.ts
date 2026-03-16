@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://inventcontrol-backend-1.onrender.com/api'
+  apiUrl: 'https://inventcontrol-backend-1.onrender.com/api',
+  imagesUrl: 'https://inventcontrol-backend-1.onrender.com'
 };
