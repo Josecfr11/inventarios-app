@@ -1,39 +1,91 @@
-<div class="container-fluid">
-  <div class="row">
-    <form [formGroup]="ventasForm" (ngSubmit)="agregarEditarVenta()">
-      <div class="row">
-        <div class="col-12 mb-3">
-          <label for="name" class="block font-bold mb-2">Venta</label>
-          <input type="text" pInputText id="venta" required autofocus fluid formControlName="numVenta" />
-        </div>
-        <div class="col-12 mb-3">
-          <label for="name" class="block font-bold mb-2">Fecha</label>
-          <div>
-            <p-datepicker dateFormat="dd/mm/yy" [iconDisplay]="'input'" [showIcon]="true" formControlName="fecha"
-              value="" />
-          </div>
-        </div>
-        <div class="col-12 mb-3">
-          <label for="name" class="block font-bold mb-2">Total</label>
-          <input type="text" pInputText id="name" required autofocus fluid formControlName="total" />
-        </div>
-        <div class="col-12 mb-3">
-          <label for="name" class="block font-bold mb-2">Estado</label>
-          <p-select formControlName="estado" [options]="estados" optionLabel="estatus"
-            placeholder="Selecciona un estado" [showClear]="true" [checkmark]="true" class="w-full md:w-56" optionValue="id"/>
-        </div>
-        <div class="col-12 mb-3">
-          <label for="name" class="block font-bold mb-2">Tipo de pago</label>
-          <p-select appendTo="body" formControlName="tipoPago" [options]="tiposPagos" optionLabel="tipoPago"
-            placeholder="Selecciona un tipo de pago" [showClear]="true" [checkmark]="true" optionValue="id"
-            class="w-full md:w-56" />
-        </div>
+<div class="container-fluid p-2">
+  <form [formGroup]="ventasForm" (ngSubmit)="agregarEditarVenta()">
+
+    <h5 class="text-primary fw-bold mb-3 border-bottom pb-2">Datos de la Venta</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">N° Factura</label>
+        <input type="text" pInputText class="w-100" formControlName="numeroFactura" placeholder="Ej. FAC-1001" />
       </div>
-      <div class="row mt-4">
-        <div class="col justify-content-end" style="display: flex;">
-          <p-button type="submit" label="Guardar" icon="pi pi-save" />
-        </div>
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">Cliente</label>
+        <p-dropdown [options]="clientes" formControlName="clienteId" optionLabel="nombre" optionValue="id"
+                    placeholder="Seleccionar cliente" appendTo="body" styleClass="w-100" class="w-100" [filter]="true" filterBy="nombre"></p-dropdown>
       </div>
-    </form>
-  </div>
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">Estado</label>
+        <p-select formControlName="estado" [options]="estados" optionLabel="estatus" optionValue="id"
+                  placeholder="Estado" appendTo="body" styleClass="w-100" class="w-100"></p-select>
+      </div>
+      <div class="col-md-6">
+        <label class="block font-bold mb-1">Tipo de Pago</label>
+        <p-select formControlName="tipoPago" [options]="tiposPagos" optionLabel="tipoPago" optionValue="id"
+                  placeholder="Método de pago" appendTo="body" styleClass="w-100" class="w-100"></p-select>
+      </div>
+    </div>
+
+    <h5 class="text-primary fw-bold mb-3 border-bottom pb-2">Herramientas</h5>
+    <div class="row g-2 align-items-end mb-3 bg-light p-3 rounded" *ngIf="!esEdicion">
+      <div class="col-md-7">
+        <label class="block font-bold mb-1 text-sm">Buscar Herramienta</label>
+        <p-dropdown [options]="herramientas" [(ngModel)]="herramientaSeleccionada" [ngModelOptions]="{standalone: true}"
+                    optionLabel="nombre" placeholder="Selecciona..." appendTo="body" styleClass="w-100" class="w-100"
+                    [filter]="true" filterBy="nombre">
+            <ng-template let-h pTemplate="item">
+              <div class="d-flex justify-content-between">
+                <span>{{h.nombre}}</span> <span class="fw-bold text-success">${{h.valor}}</span>
+              </div>
+            </ng-template>
+        </p-dropdown>
+      </div>
+      <div class="col-md-3">
+        <label class="block font-bold mb-1 text-sm">Cantidad</label>
+        <input type="number" pInputText class="w-100" [(ngModel)]="cantidadSeleccionada" [ngModelOptions]="{standalone: true}" min="1" />
+      </div>
+      <div class="col-md-2">
+        <p-button icon="pi pi-plus" label="Agregar" styleClass="p-button-success w-100" (onClick)="agregarDetalle()" [disabled]="!herramientaSeleccionada"></p-button>
+      </div>
+    </div>
+
+    <p-table [value]="detallesFormArray.controls" responsiveLayout="scroll" styleClass="p-datatable-sm border mb-3">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Herramienta</th>
+          <th>Cant.</th>
+          <th>P. Unitario</th>
+          <th>Subtotal</th>
+          <th class="text-center" *ngIf="!esEdicion">Quitar</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-detalle let-i="rowIndex">
+        <tr [formGroup]="detalle">
+          <td>{{ detalle.get('nombreHerramienta')?.value }}</td>
+          <td>{{ detalle.get('cantidad')?.value }}</td>
+          <td>{{ detalle.get('precioUnitario')?.value | currency:'USD' }}</td>
+          <td class="fw-bold">{{ detalle.get('subtotal')?.value | currency:'USD' }}</td>
+          <td class="text-center" *ngIf="!esEdicion">
+            <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text p-button-sm" (onClick)="eliminarDetalle(i)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center text-muted p-3">Agrega herramientas a la venta.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="row align-items-center mb-4">
+      <div class="col text-end">
+        <h3 class="m-0 fw-bold text-success">Total: {{ ventasForm.get('total')?.value | currency:'USD' }}</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col d-flex justify-content-end gap-2">
+        <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-secondary p-button-text" (onClick)="ref.close()"></p-button>
+        <p-button type="submit" label="Guardar Venta" icon="pi pi-save" [disabled]="ventasForm.invalid || detallesFormArray.length === 0" *ngIf="!esEdicion"></p-button>
+      </div>
+    </div>
+  </form>
 </div>

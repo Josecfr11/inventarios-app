@@ -1,47 +1,57 @@
-import { ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { TableModule } from 'primeng/table';
-import { Dialog } from 'primeng/dialog';
-import { Ripple } from 'primeng/ripple';
+import { TableModule, Table } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { ConfirmDialog } from 'primeng/confirmdialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CommonModule } from '@angular/common';
-import { FileUpload } from 'primeng/fileupload';
-import { SelectModule } from 'primeng/select';
-import { Tag } from 'primeng/tag';
-import { RadioButton } from 'primeng/radiobutton';
-import { Rating } from 'primeng/rating';
-import { FormsModule } from '@angular/forms';
-import { InputNumber } from 'primeng/inputnumber';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { Table } from 'primeng/table';
-import { DropdownModule } from 'primeng/dropdown';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { VentasModalComponent } from './ventas-modal/ventas-modal.component';
-import { ventasList } from '../../../mocks/ventas';
+
+// Servicios reales
+import { VentasService } from '../../services/ventas.service'; // Ajusta la ruta
+
 @Component({
   selector: 'app-ventas',
   standalone: true,
-  imports: [TableModule, Dialog, ButtonModule, Ripple, SelectModule, ToastModule, ToolbarModule, ConfirmDialog, InputTextModule, TextareaModule, CommonModule, FileUpload, DropdownModule, Tag, RadioButton, Rating, InputTextModule, FormsModule, InputNumber, IconFieldModule, InputIconModule],
+  imports: [
+    TableModule, DialogModule, ButtonModule, RippleModule,
+    ToastModule, ToolbarModule, ConfirmDialogModule, CommonModule
+  ],
   providers: [DialogService, MessageService, ConfirmationService],
   templateUrl: './ventas.component.html',
   styleUrl: './ventas.component.css'
 })
-export class VentasComponent implements OnDestroy {
-  public ventas: any[] = ventasList;
-  constructor(public dialogService: DialogService, public messageService: MessageService) { }
+export class VentasComponent implements OnInit, OnDestroy {
+  public ventas: any[] = [];
   ref: DynamicDialogRef | undefined;
   @ViewChild('dt') dt!: Table;
 
-  show() {
+  constructor(
+    public dialogService: DialogService,
+    public messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private ventasService: VentasService // <-- Inyectamos el servicio
+  ) { }
+
+  ngOnInit() {
+    this.cargarVentas();
+  }
+
+  cargarVentas() {
+    this.ventasService.getAll().subscribe({
+      next: (data) => this.ventas = data,
+      error: (err) => console.error("Error al cargar ventas", err)
+    });
+  }
+
+  show(ventaSeleccionada?: any) {
     this.ref = this.dialogService.open(VentasModalComponent, {
-      header: 'Agregar venta',
-      width: '50vw',
+      header: ventaSeleccionada ? 'Editar Venta' : 'Agregar Venta',
+      width: '60vw',
       modal: true,
       closable: true,
       contentStyle: { overflow: 'auto' },
@@ -49,24 +59,43 @@ export class VentasComponent implements OnDestroy {
         '960px': '75vw',
         '640px': '90vw'
       },
-      // templates: {
-      //     footer: Footer
-      // }
+      data: { venta: ventaSeleccionada }
     });
 
     this.ref.onClose.subscribe((data: any) => {
-      let summary_and_detail;
       if (data) {
-        const buttonType = data?.buttonType;
-        summary_and_detail = buttonType ? { summary: 'No Product Selected', detail: `Pressed '${buttonType}' button` } : { summary: 'Product Selected', detail: data?.name };
-      } else {
-        summary_and_detail = { summary: 'No Product Selected', detail: 'Pressed Close button' };
+        if (!data.esEdicion) {
+          // LLAMADA AL BACKEND PARA CREAR LA VENTA
+          this.ventasService.create(data.venta).subscribe({
+            next: () => {
+              this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Venta registrada correctamente', life: 3000 });
+              this.cargarVentas(); // Recargar tabla
+            },
+            error: (err) => {
+              console.error(err);
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo guardar la venta', life: 3000 });
+            }
+          });
+        }
       }
-      this.messageService.add({ severity: 'info', ...summary_and_detail, life: 3000 });
     });
+  }
 
-    this.ref.onMaximize.subscribe((value) => {
-      this.messageService.add({ severity: 'info', summary: 'Maximized', detail: `maximized: ${value.maximized}` });
+  eliminar(venta: any) {
+    // Si implementas el borrado en el backend
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de que deseas cancelar la factura ${venta.numeroFactura}?`,
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.ventasService.delete(venta.id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Venta cancelada', life: 3000 });
+            this.cargarVentas();
+          },
+          error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cancelar', life: 3000 })
+        });
+      }
     });
   }
 
@@ -75,172 +104,4 @@ export class VentasComponent implements OnDestroy {
       this.ref.close();
     }
   }
-  // productDialog: boolean = false;
-
-  // products!: Product[];
-
-  // product!: Product;
-
-  // selectedProducts!: Product[] | null;
-
-  // submitted: boolean = false;
-
-  // statuses!: any[];
-
-
-  // cols!: Column[];
-
-  // exportColumns!: ExportColumn[];
-
-  // constructor(
-  //     private messageService: MessageService,
-  //     private confirmationService: ConfirmationService,
-  //     private cd: ChangeDetectorRef
-  // ) { }
-
-  // exportCSV() {
-  //     this.dt.exportCSV();
-  // }
-
-  // ngOnInit() {
-  //     this.loadDemoData();
-  // }
-
-  // loadDemoData() {
-  //     this.productService.getProducts().then((data) => {
-  //         this.products = data;
-  //         this.cd.markForCheck();
-  //     });
-
-  //     this.statuses = [
-  //         { label: 'INSTOCK', value: 'instock' },
-  //         { label: 'LOWSTOCK', value: 'lowstock' },
-  //         { label: 'OUTOFSTOCK', value: 'outofstock' }
-  //     ];
-
-  //     this.cols = [
-  //         { field: 'code', header: 'Code', customExportHeader: 'Product Code' },
-  //         { field: 'name', header: 'Name' },
-  //         { field: 'image', header: 'Image' },
-  //         { field: 'price', header: 'Price' },
-  //         { field: 'category', header: 'Category' }
-  //     ];
-
-  //     this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
-  // }
-
-  // openNew() {
-  //     this.product = {};
-  //     this.submitted = false;
-  //     this.productDialog = true;
-  // }
-
-  // editProduct(product: Product) {
-  //     this.product = { ...product };
-  //     this.productDialog = true;
-  // }
-
-  // deleteSelectedProducts() {
-  //     this.confirmationService.confirm({
-  //         message: 'Are you sure you want to delete the selected products?',
-  //         header: 'Confirm',
-  //         icon: 'pi pi-exclamation-triangle',
-  //         accept: () => {
-  //             this.products = this.products.filter((val) => !this.selectedProducts?.includes(val));
-  //             this.selectedProducts = null;
-  //             this.messageService.add({
-  //                 severity: 'success',
-  //                 summary: 'Successful',
-  //                 detail: 'Products Deleted',
-  //                 life: 3000
-  //             });
-  //         }
-  //     });
-  // }
-
-  // hideDialog() {
-  //     this.productDialog = false;
-  //     this.submitted = false;
-  // }
-
-  // deleteProduct(product: Product) {
-  //     this.confirmationService.confirm({
-  //         message: 'Are you sure you want to delete ' + product.name + '?',
-  //         header: 'Confirm',
-  //         icon: 'pi pi-exclamation-triangle',
-  //         accept: () => {
-  //             this.products = this.products.filter((val) => val.id !== product.id);
-  //             this.product = {};
-  //             this.messageService.add({
-  //                 severity: 'success',
-  //                 summary: 'Successful',
-  //                 detail: 'Product Deleted',
-  //                 life: 3000
-  //             });
-  //         }
-  //     });
-  // }
-
-  // findIndexById(id: string): number {
-  //     let index = -1;
-  //     for (let i = 0; i < this.products.length; i++) {
-  //         if (this.products[i].id === id) {
-  //             index = i;
-  //             break;
-  //         }
-  //     }
-
-  //     return index;
-  // }
-
-  // createId(): string {
-  //     let id = '';
-  //     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  //     for (var i = 0; i < 5; i++) {
-  //         id += chars.charAt(Math.floor(Math.random() * chars.length));
-  //     }
-  //     return id;
-  // }
-
-  // getSeverity(status: string) {
-  //     switch (status) {
-  //         case 'INSTOCK':
-  //             return 'success';
-  //         case 'LOWSTOCK':
-  //             return 'warn';
-  //         case 'OUTOFSTOCK':
-  //             return 'danger';
-  //     }
-  // }
-
-  // saveProduct() {
-  //     this.submitted = true;
-
-  //     if (this.product.name?.trim()) {
-  //         if (this.product.id) {
-  //             this.products[this.findIndexById(this.product.id)] = this.product;
-  //             this.messageService.add({
-  //                 severity: 'success',
-  //                 summary: 'Successful',
-  //                 detail: 'Product Updated',
-  //                 life: 3000
-  //             });
-  //         } else {
-  //             this.product.id = this.createId();
-  //             this.product.image = 'product-placeholder.svg';
-  //             this.products.push(this.product);
-  //             this.messageService.add({
-  //                 severity: 'success',
-  //                 summary: 'Successful',
-  //                 detail: 'Product Created',
-  //                 life: 3000
-  //             });
-  //         }
-
-  //         this.products = [...this.products];
-  //         this.productDialog = false;
-  //         this.product = {};
-  //     }
-  // }
-
 }
