@@ -1,7 +1,0 @@
-[build]
-  publish = "dist/inventarios-app"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
