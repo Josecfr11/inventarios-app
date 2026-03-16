@@ -32,7 +32,7 @@
         <ng-template pTemplate="body" let-h>
           <tr>
             <td class="ps-4">
-              <img *ngIf="h.imagen" [src]="'http://localhost:8080/uploads/' + h.imagen" alt="Img"
+              <img *ngIf="h.imagen" [src]="`${this.api}/uploads/${h.imagen}`" alt="Img"
                 style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             </td>
             <td class="fw-bold text-primary">{{ h.codigo }}</td>

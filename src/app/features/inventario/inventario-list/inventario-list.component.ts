@@ -12,14 +12,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { HerramientaFormComponent } from '../herramienta-form/herramienta-form.component';
 import { HerramientasService } from '../../../services/herramientas.service';
-
+import { environment } from '../../../enviroment';
 @Component({
   selector: 'app-inventario-list',
   standalone: true,
   imports: [
     CommonModule, FormsModule, TableModule, ButtonModule,
     InputTextModule, TagModule, TooltipModule, ConfirmDialogModule,
-    ToastModule // <-- NUEVO
+    ToastModule
   ],
   providers: [ConfirmationService, MessageService, DialogService], // <-- DialogService AÑADIDO
   templateUrl: './inventario-list.component.html',
@@ -28,7 +28,7 @@ import { HerramientasService } from '../../../services/herramientas.service';
 export class InventarioListComponent implements OnInit {
   listaHerramientas: any[] = [];
   ref: DynamicDialogRef | undefined;
-
+  api: string = '';
   constructor(
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -38,6 +38,7 @@ export class InventarioListComponent implements OnInit {
 
   ngOnInit() {
     this.cargarHerramientas();
+    this.api = environment.apiUrl;
   }
 
   cargarHerramientas() {
