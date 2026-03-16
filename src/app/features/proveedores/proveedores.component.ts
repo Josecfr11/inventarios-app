@@ -8,15 +8,17 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TooltipModule } from 'primeng/tooltip'; // Agregado para los tooltips de botones
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ProveedoresService } from '../../services/proveedores.service';
+import { ProveedoresService } from '../../services/proveedores.service'; // Ajusta tu ruta
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, TableModule, ButtonModule,
-    TagModule, DialogModule, InputTextModule, ToastModule, ConfirmDialogModule
+    TagModule, DialogModule, InputTextModule, ToastModule,
+    ConfirmDialogModule, TooltipModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './proveedores.component.html',
@@ -53,7 +55,7 @@ export class ProveedoresComponent implements OnInit {
   cargarProveedores() {
     this.proveedoresService.getAll().subscribe({
       next: (data) => this.proveedores = data,
-      error: () => this.mostrarToast('error', 'Error', 'No se pudo cargar la lista')
+      error: () => this.mostrarToast('error', 'Error', 'No se pudo cargar la lista de proveedores')
     });
   }
 
@@ -82,16 +84,17 @@ export class ProveedoresComponent implements OnInit {
       return;
     }
 
-    const payload = this.proveedoresForm.value;
+    const payload = this.proveedoresForm.getRawValue();
 
     if (this.esEdicion && this.idProveedorEditado) {
+      payload.id = this.idProveedorEditado; // Adjuntamos el ID para la actualización
       this.proveedoresService.update(this.idProveedorEditado, payload).subscribe({
         next: () => {
           this.mostrarToast('success', 'Actualizado', 'Proveedor editado con éxito');
           this.cargarProveedores();
           this.cerrarModal();
         },
-        error: () => this.mostrarToast('error', 'Error', 'No se pudo editar')
+        error: () => this.mostrarToast('error', 'Error', 'No se pudo actualizar el proveedor')
       });
     } else {
       this.proveedoresService.create(payload).subscribe({
@@ -100,7 +103,7 @@ export class ProveedoresComponent implements OnInit {
           this.cargarProveedores();
           this.cerrarModal();
         },
-        error: () => this.mostrarToast('error', 'Error', 'No se pudo guardar')
+        error: () => this.mostrarToast('error', 'Error', 'No se pudo guardar el proveedor')
       });
     }
   }
@@ -116,7 +119,7 @@ export class ProveedoresComponent implements OnInit {
             this.mostrarToast('success', 'Eliminado', 'Proveedor eliminado con éxito');
             this.cargarProveedores();
           },
-          error: () => this.mostrarToast('error', 'Error', 'No se pudo eliminar')
+          error: () => this.mostrarToast('error', 'Error', 'No se pudo eliminar el proveedor')
         });
       }
     });

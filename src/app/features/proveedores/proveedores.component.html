@@ -1,75 +1,98 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
 <div class="card shadow-sm m-4 border-none">
   <div class="flex justify-content-between align-items-center p-3">
     <div>
       <h3 class="m-0 font-bold"><i class="pi pi-users mr-2"></i>Directorio de Proveedores</h3>
       <p class="text-500 text-sm">Gestión de contactos y suministros industriales</p>
     </div>
-    <p-button label="Agregar Proveedor" icon="pi pi-user-plus" (onClick)="displayModal = true" severity="success"
-      [rounded]="true"></p-button>
+    <p-button label="Agregar Proveedor" icon="pi pi-plus" (onClick)="abrirModalNuevo()" severity="success" [rounded]="true"></p-button>
   </div>
 
-  <p-table [value]="proveedores" styleClass="p-datatable-striped shadow-1">
+  <p-table [value]="proveedores" [paginator]="true" [rows]="10" styleClass="p-datatable-striped shadow-1 mt-3">
     <ng-template pTemplate="header">
       <tr>
-        <th>RUC / ID</th>
-        <th>Razón Social</th>
+        <th pSortableColumn="nombre">Razón Social <p-sortIcon field="nombre"></p-sortIcon></th>
         <th>Contacto</th>
         <th>Teléfono</th>
-        <th>Rubro</th>
+        <th>Email</th>
+        <th pSortableColumn="tipoProducto">Suministro <p-sortIcon field="tipoProducto"></p-sortIcon></th>
+        <th class="text-center">Acciones</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-p>
       <tr>
-        <td class="font-bold text-blue-600">{{ p.ruc }}</td>
-        <td>{{ p.nombre }}</td>
+        <td class="font-bold text-primary">{{ p.nombre }}</td>
         <td>{{ p.contacto }}</td>
-        <td>{{ p.telf }}</td>
-        <td><p-tag [value]="p.rubro" severity="secondary" [rounded]="true"></p-tag></td>
+        <td>{{ p.telefono }}</td>
+        <td>{{ p.email }}</td>
+        <td><p-tag [value]="p.tipoProducto" severity="secondary" [rounded]="true"></p-tag></td>
+        <td class="text-center">
+          <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" severity="info" pTooltip="Editar" (onClick)="abrirModalEditar(p)"></p-button>
+          <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" pTooltip="Eliminar" (onClick)="eliminar(p)"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="text-center p-4 text-muted">No hay proveedores registrados en el sistema.</td>
       </tr>
     </ng-template>
   </p-table>
 </div>
 
-<p-dialog header="Registrar Nuevo Proveedor" [(visible)]="displayModal" [modal]="true" [style]="{width: '500px'}"
-  [draggable]="false" [resizable]="false">
-  <div class="container-fluid">
-    <div class="row">
-      <form [formGroup]="proveedoresForm">
-        <div class="row">
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">RUC / ID Identificación</label>
-            <input type="text" pInputText required fluid formControlName="ruc" placeholder="Ej: 20123456789" />
-          </div>
+<p-dialog [header]="esEdicion ? 'Editar Proveedor' : 'Registrar Nuevo Proveedor'" [(visible)]="displayModal" [modal]="true" [style]="{width: '550px'}" [draggable]="false" [resizable]="false">
+  <div class="container-fluid mt-3">
 
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Razón Social</label>
-            <input type="text" pInputText required fluid formControlName="nombre" placeholder="Nombre de la empresa" />
-          </div>
+    <form [formGroup]="proveedoresForm">
+      <div class="row g-3">
 
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Persona de Contacto</label>
-            <input type="text" pInputText required fluid formControlName="contacto" placeholder="Nombre del contacto" />
-          </div>
-
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Teléfono</label>
-            <input type="text" pInputText required fluid formControlName="telf" placeholder="999-999-999" />
-          </div>
-
-          <div class="col-12 mb-3">
-            <label class="block font-bold mb-2">Rubro</label>
-            <input type="text" pInputText required fluid formControlName="rubro" placeholder="Ej: Electricidad" />
-          </div>
+        <div class="col-12">
+          <label class="block font-bold mb-1">Razón Social <span class="text-danger">*</span></label>
+          <input type="text" pInputText class="w-100" formControlName="nombre" placeholder="Nombre de la empresa" />
+          <small class="text-danger" *ngIf="proveedoresForm.get('nombre')?.invalid && proveedoresForm.get('nombre')?.touched">Campo requerido.</small>
         </div>
 
-        <div class="row mt-4">
-          <div class="col justify-content-end" style="display: flex; gap: 8px;">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary"
-              (onClick)="displayModal = false" />
-            <p-button type="submit" label="Guardar Proveedor" icon="pi pi-save" />
-          </div>
+        <div class="col-md-6">
+          <label class="block font-bold mb-1">Contacto <span class="text-danger">*</span></label>
+          <input type="text" pInputText class="w-100" formControlName="contacto" placeholder="Nombre del asesor" />
+          <small class="text-danger" *ngIf="proveedoresForm.get('contacto')?.invalid && proveedoresForm.get('contacto')?.touched">Campo requerido.</small>
         </div>
-      </form>
-    </div>
+
+        <div class="col-md-6">
+          <label class="block font-bold mb-1">Teléfono <span class="text-danger">*</span></label>
+          <input type="text" pInputText class="w-100" formControlName="telefono" placeholder="Ej: 555-1234" />
+          <small class="text-danger" *ngIf="proveedoresForm.get('telefono')?.invalid && proveedoresForm.get('telefono')?.touched">Campo requerido.</small>
+        </div>
+
+        <div class="col-12">
+          <label class="block font-bold mb-1">Email <span class="text-danger">*</span></label>
+          <input type="email" pInputText class="w-100" formControlName="email" placeholder="correo@empresa.com" />
+          <small class="text-danger" *ngIf="proveedoresForm.get('email')?.hasError('required') && proveedoresForm.get('email')?.touched">El email es requerido.</small>
+          <small class="text-danger" *ngIf="proveedoresForm.get('email')?.hasError('email') && proveedoresForm.get('email')?.touched">Formato de correo inválido.</small>
+        </div>
+
+        <div class="col-12">
+          <label class="block font-bold mb-1">Dirección <span class="text-danger">*</span></label>
+          <input type="text" pInputText class="w-100" formControlName="direccion" placeholder="Calle, Ciudad, etc." />
+          <small class="text-danger" *ngIf="proveedoresForm.get('direccion')?.invalid && proveedoresForm.get('direccion')?.touched">Campo requerido.</small>
+        </div>
+
+        <div class="col-12">
+          <label class="block font-bold mb-1">Tipo de Suministro <span class="text-danger">*</span></label>
+          <input type="text" pInputText class="w-100" formControlName="tipoProducto" placeholder="Ej: Herramientas, Construcción" />
+          <small class="text-danger" *ngIf="proveedoresForm.get('tipoProducto')?.invalid && proveedoresForm.get('tipoProducto')?.touched">Campo requerido.</small>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col d-flex justify-content-end gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="cerrarModal()"></p-button>
+
+          <p-button [label]="esEdicion ? 'Actualizar' : 'Guardar'" icon="pi pi-save" (onClick)="agregarEditarProveedor()" [disabled]="proveedoresForm.invalid"></p-button>
+        </div>
+      </div>
+    </form>
   </div>
 </p-dialog>
