@@ -7,22 +7,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
-
-// Importa tus mocks reales
 import { estatusList, tiposPagoList, EstatusVenta, TiposPago } from '../../../../mocks/ventas';
-
+import { ClientesService } from '../../../services/clientes.service';
+import { HerramientasService } from '../../../services/herramientas.service';
 @Component({
   selector: 'app-ventas-modal',
   standalone: true,
   imports: [
-    CommonModule,
-    ButtonModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    FormsModule, // <-- 2. ¡AGRÉGALO AQUÍ!
-    SelectModule,
-    DropdownModule,
-    TableModule
+    CommonModule, ButtonModule, InputTextModule, ReactiveFormsModule,
+    FormsModule, SelectModule, DropdownModule, TableModule
   ],
   templateUrl: './ventas-modal.component.html'
 })
@@ -30,41 +23,37 @@ export class VentasModalComponent implements OnInit {
   public estados: EstatusVenta[] = estatusList;
   public tiposPagos: TiposPago[] = tiposPagoList;
 
-  // Mocks temporales para clientes y herramientas (reemplazar con servicios)
-  public clientes = [
-    { id: 1, nombre: 'Juan Pérez' },
-    { id: 2, nombre: 'Empresa Constructora S.A.' }
-  ];
-  public herramientas = [
-    { id: 1, nombre: 'Taladro Bosch', valor: 150.00, stockActual: 10 },
-    { id: 2, nombre: 'Set de Llaves', valor: 45.50, stockActual: 25 }
-  ];
+  // Arreglos vacíos que se llenarán desde la API
+  public clientes: any[] = [];
+  public herramientas: any[] = [];
 
   public ventasForm: FormGroup;
   public esEdicion: boolean = false;
   public idVentaEditada: any = null;
 
-  // Variables para el selector temporal de herramientas
   public herramientaSeleccionada: any = null;
   public cantidadSeleccionada: number = 1;
 
   constructor(
     private fb: FormBuilder,
     public ref: DynamicDialogRef,
-    public config: DynamicDialogConfig
+    public config: DynamicDialogConfig,
+    private clientesService: ClientesService,
+    private herramientasService: HerramientasService
   ) {
-    // Definimos el formulario maestro
     this.ventasForm = this.fb.group({
       numeroFactura: ['', Validators.required],
       estado: ['', Validators.required],
       tipoPago: ['', Validators.required],
       clienteId: [null, Validators.required],
-      total: [{ value: 0, disabled: true }], // El total se calcula solo, por eso lo deshabilitamos
-      detalles: this.fb.array([]) // Array vacío para guardar las herramientas
+      total: [{ value: 0, disabled: true }],
+      detalles: this.fb.array([])
     });
   }
 
   ngOnInit() {
+    this.cargarDatosDesplegables();
+
     if (this.config.data?.venta) {
       this.esEdicion = true;
       const v = this.config.data.venta;
@@ -74,15 +63,33 @@ export class VentasModalComponent implements OnInit {
         numeroFactura: v.numeroFactura,
         estado: v.estado,
         tipoPago: v.tipoPago,
-        clienteId: v.cliente?.id,
+        clienteId: v.cliente?.id, // Asumiendo que Spring envía el objeto cliente anidado
         total: v.total
       });
 
-      // Si editaras detalles, harías un bucle aquí para llenar el FormArray
+      // Si necesitas mostrar los detalles en modo edición
+      if (v.detalles && v.detalles.length > 0) {
+        v.detalles.forEach((d: any) => {
+          const detalle = this.fb.group({
+            herramientaId: [d.herramienta.id],
+            nombreHerramienta: [d.herramienta.nombre],
+            cantidad: [d.cantidad, Validators.required],
+            precioUnitario: [d.precioUnitario],
+            subtotal: [d.subtotal]
+          });
+          this.detallesFormArray.push(detalle);
+        });
+      }
     }
   }
 
-  // --- LÓGICA DEL DETALLE DE LA VENTA ---
+  cargarDatosDesplegables() {
+    this.clientesService.getAll().subscribe(data => this.clientes = data);
+    this.herramientasService.getAll().subscribe(data => {
+      this.herramientas = data.filter(h => h.stockActual > 0 && h.activo);
+    });
+  }
+
   get detallesFormArray() {
     return this.ventasForm.get('detalles') as FormArray;
   }
@@ -90,11 +97,15 @@ export class VentasModalComponent implements OnInit {
   agregarDetalle() {
     if (!this.herramientaSeleccionada || this.cantidadSeleccionada < 1) return;
 
-    const subtotal = this.herramientaSeleccionada.valor * this.cantidadSeleccionada;
+    if (this.cantidadSeleccionada > this.herramientaSeleccionada.stockActual) {
+      alert(`Stock insuficiente. Solo hay ${this.herramientaSeleccionada.stockActual} disponibles.`);
+      return;
+    }
 
+    const subtotal = this.herramientaSeleccionada.valor * this.cantidadSeleccionada;
     const detalle = this.fb.group({
       herramientaId: [this.herramientaSeleccionada.id],
-      nombreHerramienta: [this.herramientaSeleccionada.nombre], // Solo para la vista
+      nombreHerramienta: [this.herramientaSeleccionada.nombre],
       cantidad: [this.cantidadSeleccionada, Validators.required],
       precioUnitario: [this.herramientaSeleccionada.valor],
       subtotal: [subtotal]
@@ -103,7 +114,6 @@ export class VentasModalComponent implements OnInit {
     this.detallesFormArray.push(detalle);
     this.calcularTotalGeneral();
 
-    // Limpiar selectores
     this.herramientaSeleccionada = null;
     this.cantidadSeleccionada = 1;
   }
@@ -121,21 +131,17 @@ export class VentasModalComponent implements OnInit {
     this.ventasForm.patchValue({ total: total });
   }
 
-  // --- GUARDADO ---
   agregarEditarVenta() {
     if (this.ventasForm.invalid || this.detallesFormArray.length === 0) {
       this.ventasForm.markAllAsTouched();
-      alert("Faltan datos o no has agregado herramientas a la venta.");
       return;
     }
 
-    // Usamos getRawValue() para incluir el 'total' que estaba disabled
     const payload = {
       id: this.idVentaEditada,
       ...this.ventasForm.getRawValue()
     };
 
-    // Quitamos el nombreHerramienta que era solo visual para enviar el JSON limpio al backend
     payload.detalles = payload.detalles.map((d: any) => ({
       herramientaId: d.herramientaId,
       cantidad: d.cantidad,
