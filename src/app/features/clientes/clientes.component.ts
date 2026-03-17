@@ -42,7 +42,6 @@ export class ClientesComponent implements OnInit, OnDestroy {
   cargarClientes() {
     this.clientesService.getAll().subscribe({
       next: (data) => {
-        // Solo mostramos los activos en la tabla principal
         this.clientes = data.filter(c => c.activo !== false);
       },
       error: (err) => this.mostrarToast('error', 'Error', 'No se pudieron cargar los clientes')

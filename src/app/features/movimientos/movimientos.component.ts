@@ -35,7 +35,6 @@ export class MovimientosComponent implements OnInit {
     });
   }
 
-  // Método para asignar el color del Tag dinámicamente
   getSeverity(tipo: string): "success" | "danger" | "warning" | "info" | "secondary" | undefined {
     if (!tipo) return 'info';
     const t = tipo.toUpperCase();

@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, InputTextModule,
     ButtonModule, CheckboxModule, ToastModule, DialogModule
-    // Eliminada la duplicación de ReactiveFormsModule
   ],
   providers: [MessageService],
   templateUrl: './login.component.html',
@@ -26,7 +25,7 @@ export class LoginComponent implements OnInit {
   usuario: string = '';
   clave: string = '';
   cargando: boolean = false;
-  recordar: boolean = false; // <-- Nueva variable para el checkbox
+  recordar: boolean = false;
 
   showSoporte: boolean = false;
   displayRegistro: boolean = false;
@@ -38,7 +37,7 @@ export class LoginComponent implements OnInit {
     private messageService: MessageService,
     private fb: FormBuilder,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.registroForm = this.fb.group({
@@ -62,13 +61,11 @@ export class LoginComponent implements OnInit {
       next: (success) => {
         this.cargando = false;
 
-        // Evaluamos el booleano que devuelve nuestro AuthService
         if (success) {
-           this.messageService.add({ severity: 'success', summary: 'Bienvenido', detail: 'Acceso concedido' });
-           setTimeout(() => {
-             // Asegúrate de que esta sea tu ruta principal
-             this.router.navigate(['/inventario']);
-           }, 1000);
+          this.messageService.add({ severity: 'success', summary: 'Bienvenido', detail: 'Acceso concedido' });
+          setTimeout(() => {
+            this.router.navigate(['/inventario']);
+          }, 1000);
         } else {
           this.messageService.add({ severity: 'error', summary: 'Acceso Denegado', detail: 'Usuario, clave incorrectos o inactivo' });
         }
@@ -80,7 +77,6 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  // --- LÓGICA DE REGISTRO ---
   abrirModalRegistro() {
     this.registroForm.reset({ rol: 'EMPLEADO' });
     this.displayRegistro = true;
@@ -100,9 +96,8 @@ export class LoginComponent implements OnInit {
         this.displayRegistro = false;
         this.messageService.add({ severity: 'success', summary: '¡Bienvenido!', detail: 'Tu cuenta ha sido creada. Ya puedes iniciar sesión.' });
 
-        // Autocompletamos el input de usuario
         this.usuario = this.registroForm.get('username')?.value;
-        this.clave = ''; // Limpiamos la clave por seguridad
+        this.clave = '';
       },
       error: () => {
         this.cargandoRegistro = false;

@@ -87,7 +87,7 @@ export class ProveedoresComponent implements OnInit {
     const payload = this.proveedoresForm.getRawValue();
 
     if (this.esEdicion && this.idProveedorEditado) {
-      payload.id = this.idProveedorEditado; // Adjuntamos el ID para la actualización
+      payload.id = this.idProveedorEditado;
       this.proveedoresService.update(this.idProveedorEditado, payload).subscribe({
         next: () => {
           this.mostrarToast('success', 'Actualizado', 'Proveedor editado con éxito');

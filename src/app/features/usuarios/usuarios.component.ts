@@ -91,7 +91,7 @@ export class UsuariosComponent implements OnInit {
       next: () => {
         const nuevoEstado = user.activo ? 'INACTIVO' : 'ACTIVO';
         this.messageService.add({ severity: 'info', summary: 'Estado Actualizado', detail: `${user.username} está ahora ${nuevoEstado}` });
-        this.cargarUsuarios(); // Recarga la lista para reflejar el cambio real
+        this.cargarUsuarios();
       },
       error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cambiar el estado' })
     });

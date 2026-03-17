@@ -19,7 +19,6 @@ export class VentasService {
     return this.http.post<any>(this.apiUrl, venta);
   }
 
-  // Si implementas borrar después en Spring Boot
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

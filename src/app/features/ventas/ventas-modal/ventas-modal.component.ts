@@ -23,7 +23,6 @@ export class VentasModalComponent implements OnInit {
   public estados: EstatusVenta[] = estatusList;
   public tiposPagos: TiposPago[] = tiposPagoList;
 
-  // Arreglos vacíos que se llenarán desde la API
   public clientes: any[] = [];
   public herramientas: any[] = [];
 
@@ -63,11 +62,10 @@ export class VentasModalComponent implements OnInit {
         numeroFactura: v.numeroFactura,
         estado: v.estado,
         tipoPago: v.tipoPago,
-        clienteId: v.cliente?.id, // Asumiendo que Spring envía el objeto cliente anidado
+        clienteId: v.cliente?.id,
         total: v.total
       });
 
-      // Si necesitas mostrar los detalles en modo edición
       if (v.detalles && v.detalles.length > 0) {
         v.detalles.forEach((d: any) => {
           const detalle = this.fb.group({

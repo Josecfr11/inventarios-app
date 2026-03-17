@@ -4,8 +4,8 @@ import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { TagModule } from 'primeng/tag';      // <--- IMPORTANTE
-import { TooltipModule } from 'primeng/tooltip'; // <--- IMPORTANTE
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { AuthService } from './auth.service';
 
 @Component({

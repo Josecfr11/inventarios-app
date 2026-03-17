@@ -10,10 +10,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CommonModule } from '@angular/common';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { VentasModalComponent } from './ventas-modal/ventas-modal.component';
-
-// Servicios reales
-import { VentasService } from '../../services/ventas.service'; // Ajusta la ruta
-
+import { VentasService } from '../../services/ventas.service';
 @Component({
   selector: 'app-ventas',
   standalone: true,
@@ -34,7 +31,7 @@ export class VentasComponent implements OnInit, OnDestroy {
     public dialogService: DialogService,
     public messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private ventasService: VentasService // <-- Inyectamos el servicio
+    private ventasService: VentasService
   ) { }
 
   ngOnInit() {
@@ -65,11 +62,10 @@ export class VentasComponent implements OnInit, OnDestroy {
     this.ref.onClose.subscribe((data: any) => {
       if (data) {
         if (!data.esEdicion) {
-          // LLAMADA AL BACKEND PARA CREAR LA VENTA
           this.ventasService.create(data.venta).subscribe({
             next: () => {
               this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Venta registrada correctamente', life: 3000 });
-              this.cargarVentas(); // Recargar tabla
+              this.cargarVentas();
             },
             error: (err) => {
               console.error(err);
@@ -82,7 +78,6 @@ export class VentasComponent implements OnInit, OnDestroy {
   }
 
   eliminar(venta: any) {
-    // Si implementas el borrado en el backend
     this.confirmationService.confirm({
       message: `¿Estás seguro de que deseas cancelar la factura ${venta.numeroFactura}?`,
       header: 'Confirmar',
